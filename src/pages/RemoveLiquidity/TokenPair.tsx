@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { splitSignature } from '@ethersproject/bytes'
 import { Contract } from '@ethersproject/contracts'
@@ -93,7 +93,7 @@ export default function TokenPair({
     currencyB ?? undefined,
     pairAddress
   )
-  const { onUserInput: _onUserInput } = useBurnActionHandlers()
+  const { onUserInput: _onUserInput, onResetBurnState } = useBurnActionHandlers()
   const isValid = !error
 
   // modal and loading
@@ -513,6 +513,10 @@ export default function TokenPair({
     Number.parseInt(parsedAmounts[Field.LIQUIDITY_PERCENT].toFixed(0)),
     liquidityPercentChangeCallback
   )
+
+  useEffect(() => {
+    onResetBurnState()
+  }, [])
 
   return (
     <>

@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import { parseUnits } from 'ethers/lib/utils'
@@ -137,7 +137,7 @@ const ZapIn = ({
     ampConvertedInBps.equalTo(JSBI.BigInt(10000)) &&
     !!unAmplifiedPairAddress &&
     !isZero(unAmplifiedPairAddress)
-  const { onFieldInput, onSwitchField } = useZapInActionHandlers()
+  const { onFieldInput, onSwitchField, onResetMintState } = useZapInActionHandlers()
 
   const isValid = !error && !insufficientLiquidity
 
@@ -388,6 +388,10 @@ const ZapIn = ({
       />
     )
   }
+
+  useEffect(() => {
+    onResetMintState()
+  }, [])
 
   return (
     <Wrapper>

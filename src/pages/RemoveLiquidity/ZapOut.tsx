@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { splitSignature } from '@ethersproject/bytes'
 import { Contract } from '@ethersproject/contracts'
@@ -50,7 +50,7 @@ import { useIsExpertMode, useUserSlippageTolerance } from 'state/user/hooks'
 import { StyledInternalLink, TYPE, UppercaseText } from 'theme'
 import { Wrapper } from '../Pool/styleds'
 import { calculateGasMargin, formattedNum, getZapContract } from 'utils'
-import { convertToNativeTokenFromETH, useCurrencyConvertedToNative } from 'utils/dmm'
+import { useCurrencyConvertedToNative } from 'utils/dmm'
 import useDebouncedChangeHandler from 'utils/useDebouncedChangeHandler'
 import { wrappedCurrency } from 'utils/wrappedCurrency'
 import { currencyId } from 'utils/currencyId'
@@ -108,7 +108,7 @@ export default function ZapOut({
     price,
     error
   } = useDerivedZapOutInfo(currencyA ?? undefined, currencyB ?? undefined, pairAddress)
-  const { onUserInput: _onUserInput, onSwitchField } = useZapOutActionHandlers()
+  const { onUserInput: _onUserInput, onSwitchField, onResetBurnState } = useZapOutActionHandlers()
 
   const selectedCurrencyIsETHER = !!(
     chainId &&
@@ -543,6 +543,10 @@ export default function ZapOut({
       </>
     )
   }
+
+  useEffect(() => {
+    onResetBurnState()
+  }, [])
 
   return (
     <>

@@ -23,7 +23,7 @@ import { wrappedCurrency, wrappedCurrencyAmount } from '../../utils/wrappedCurre
 import { AppState } from '../index'
 import { tryParseAmount } from '../swap/hooks'
 import { useCurrencyBalances } from '../wallet/hooks'
-import { Field, switchTokenField, typeInput } from './actions'
+import { Field, switchTokenField, typeInput, resetMintState } from './actions'
 import { useZapInAmounts } from 'hooks/useZap'
 import { useAppDispatch } from 'state/hooks'
 
@@ -213,6 +213,7 @@ export function useMintActionHandlers(
 ): {
   onFieldAInput: (typedValue: string) => void
   onFieldBInput: (typedValue: string) => void
+  onResetMintState: () => void
 } {
   const dispatch = useAppDispatch()
 
@@ -229,9 +230,14 @@ export function useMintActionHandlers(
     [dispatch, noLiquidity]
   )
 
+  const onResetMintState = useCallback(() => {
+    dispatch(resetMintState())
+  }, [dispatch])
+
   return {
     onFieldAInput,
-    onFieldBInput
+    onFieldBInput,
+    onResetMintState
   }
 }
 
@@ -440,6 +446,7 @@ export function useDerivedZapInInfo(
 export function useZapInActionHandlers(): {
   onFieldInput: (typedValue: string) => void
   onSwitchField: () => void
+  onResetMintState: () => void
 } {
   const dispatch = useAppDispatch()
   const { independentField } = useMintState()
@@ -455,8 +462,13 @@ export function useZapInActionHandlers(): {
     dispatch(switchTokenField({ field: independentField === Field.CURRENCY_A ? Field.CURRENCY_B : Field.CURRENCY_A }))
   }, [dispatch, independentField])
 
+  const onResetMintState = useCallback(() => {
+    dispatch(resetMintState())
+  }, [dispatch])
+
   return {
     onFieldInput,
-    onSwitchField
+    onSwitchField,
+    onResetMintState
   }
 }

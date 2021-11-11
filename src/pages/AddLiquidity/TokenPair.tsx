@@ -1,4 +1,4 @@
-import React, { useCallback, useContext, useMemo, useState } from 'react'
+import React, { useCallback, useContext, useEffect, useMemo, useState } from 'react'
 import { BigNumber } from '@ethersproject/bignumber'
 import { TransactionResponse } from '@ethersproject/providers'
 import { CurrencyAmount, currencyEquals, ETHER, Fraction, JSBI, Token, TokenAmount, WETH } from '@dynamic-amm/sdk'
@@ -109,7 +109,7 @@ const TokenPair = ({
     ampConvertedInBps.equalTo(JSBI.BigInt(10000)) &&
     !!unAmplifiedPairAddress &&
     !isZero(unAmplifiedPairAddress)
-  const { onFieldAInput, onFieldBInput } = useMintActionHandlers(noLiquidity)
+  const { onFieldAInput, onFieldBInput, onResetMintState } = useMintActionHandlers(noLiquidity)
 
   const isValid = !error
 
@@ -381,6 +381,10 @@ const TokenPair = ({
   const marketPrice = marketPrices[1] && marketPrices[0] / marketPrices[1]
 
   const showSanityPriceWarning = !!(poolPrice && marketPrice && Math.abs(poolPrice - marketPrice) / marketPrice > 0.05)
+
+  useEffect(() => {
+    onResetMintState()
+  }, [])
 
   return (
     <Wrapper>

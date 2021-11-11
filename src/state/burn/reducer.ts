@@ -1,5 +1,5 @@
 import { createReducer } from '@reduxjs/toolkit'
-import { Field, switchTokenField, typeInput } from './actions'
+import { Field, resetBurnState, switchTokenField, typeInput } from './actions'
 
 export interface BurnState {
   readonly independentField: Field
@@ -15,6 +15,7 @@ const initialState: BurnState = {
 
 export default createReducer<BurnState>(initialState, builder =>
   builder
+    .addCase(resetBurnState, () => initialState)
     .addCase(typeInput, (state, { payload: { field, typedValue } }) => {
       return {
         ...state,

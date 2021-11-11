@@ -10,7 +10,7 @@ import { wrappedCurrency } from '../../utils/wrappedCurrency'
 import { AppState } from '../index'
 import { tryParseAmount } from '../swap/hooks'
 import { useTokenBalances } from '../wallet/hooks'
-import { Field, switchTokenField, typeInput } from './actions'
+import { Field, resetBurnState, switchTokenField, typeInput } from './actions'
 import { calculateSlippageAmount } from 'utils'
 import { useUserSlippageTolerance } from 'state/user/hooks'
 import { useAppDispatch } from 'state/hooks'
@@ -184,6 +184,7 @@ export function useDerivedBurnInfo(
 
 export function useBurnActionHandlers(): {
   onUserInput: (field: Field, typedValue: string) => void
+  onResetBurnState: () => void
 } {
   const dispatch = useAppDispatch()
 
@@ -194,8 +195,13 @@ export function useBurnActionHandlers(): {
     [dispatch]
   )
 
+  const onResetBurnState = useCallback(() => {
+    dispatch(resetBurnState())
+  }, [dispatch])
+
   return {
-    onUserInput
+    onUserInput,
+    onResetBurnState
   }
 }
 
@@ -449,6 +455,7 @@ export function useDerivedZapOutInfo(
 export function useZapOutActionHandlers(): {
   onUserInput: (field: Field, typedValue: string) => void
   onSwitchField: () => void
+  onResetBurnState: () => void
 } {
   const dispatch = useAppDispatch()
   const { independentTokenField } = useBurnState()
@@ -466,8 +473,13 @@ export function useZapOutActionHandlers(): {
     )
   }, [dispatch, independentTokenField])
 
+  const onResetBurnState = useCallback(() => {
+    dispatch(resetBurnState())
+  }, [dispatch])
+
   return {
     onUserInput,
-    onSwitchField
+    onSwitchField,
+    onResetBurnState
   }
 }
