@@ -1,12 +1,13 @@
 name: "DMM CI"
 
-on: [workflow_dispatch, push]
+on: [workflow_dispatch]
 
 jobs:
   docker:
     runs-on: ubuntu-18.04
     env:
       SERVICE: dmm-interface
+      CI: true
     steps:
       - name: Checkout
         uses: actions/checkout@v2
