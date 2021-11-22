@@ -44,9 +44,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-
       
-      - name: Install dependencies
-        run: yarn install --preferred-cache-folder=${{ steps.yarn-cache-dir-path.outputs.dir }}
-      
+      - uses: bahmutov/npm-install@HEAD
+
       - name: Build
         env:
           CI: false 
