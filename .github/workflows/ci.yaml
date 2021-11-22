@@ -35,7 +35,7 @@ jobs:
       
       - name: Get yarn cache directory path
         id: yarn-cache-dir-path
-        run: echo "::set-output name=dir::$(yarn config get cacheFolder)"
+        run: echo "::set-output name=dir::$(yarn cache dir)"
 
       - name: Cache node modules
         id: yarn-cache
@@ -50,8 +50,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install dependencies
-        if: steps.yarn-cache.outputs.cache-hit != 'true' 
-        run: yarn install
+        run: yarn install --preferred-cache-folder=${{ steps.yarn-cache-dir-path.outputs.dir }}
 
       - name: Build
         run: yarn build
