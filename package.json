@@ -6,7 +6,7 @@
   "devDependencies": {
     "@dynamic-amm/sdk": "^3.0.17",
     "@ethersproject/experimental": "^5.0.1",
-    "@lingui/cli": "^3.10.2",
+    "@lingui/cli": "^3.12.1",
     "@lingui/loader": "^3.10.2",
     "@lingui/macro": "^3.10.2",
     "@pangolindex/web3-react-injected-connector": "1.0.1",
