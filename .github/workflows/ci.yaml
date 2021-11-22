@@ -48,10 +48,13 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-build-
             ${{ runner.os }}-
-
+      
+      - name: Test
+        run: ls -lah "${{ steps.yarn-cache-dir-path.outputs.dir }}"
+            
       - name: Install dependencies
         run: yarn install --preferred-cache-folder=${{ steps.yarn-cache-dir-path.outputs.dir }}
-
+      
       - name: Build
         run: yarn build
         
