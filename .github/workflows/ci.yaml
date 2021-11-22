@@ -37,6 +37,7 @@ jobs:
         run: echo "::set-output name=dir::$(yarn cache dir)"
 
       - name: Cache node modules
+        id: yarn-cache
         uses: actions/cache@v2
         env:
           cache-name: cache-node-modules
@@ -48,6 +49,7 @@ jobs:
             ${{ runner.os }}-
 
       - name: Install dependencies
+        if: steps.yarn-cache.outputs.cache-hit != 'true' 
         run: yarn install
 
       - name: Build
