@@ -39,14 +39,11 @@ jobs:
       - name: Cache node modules
         id: yarn-cache
         uses: actions/cache@v2
-        env:
-          cache-name: cache-node-modules
         with:
           path: ${{ steps.yarn-cache-dir-path.outputs.dir }}
           key: ${{ runner.os }}-build-${{ hashFiles('**/yarn.lock') }}
           restore-keys: |
             ${{ runner.os }}-build-
-            ${{ runner.os }}-
       
       - name: Install dependencies
         run: yarn install --preferred-cache-folder=${{ steps.yarn-cache-dir-path.outputs.dir }}
