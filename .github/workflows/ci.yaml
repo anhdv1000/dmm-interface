@@ -57,7 +57,7 @@ jobs:
           labels: |
             commit=${{ github.sha }}
           tags: |
-            ${{ secrets.DOCKER_UERNAME }}/${{ env.SERVICE }}:develop
+            ${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE }}:develop
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
