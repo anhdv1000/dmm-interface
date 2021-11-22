@@ -7,7 +7,6 @@ jobs:
     runs-on: ubuntu-18.04
     env:
       SERVICE: dmm-interface
-      CI: false 
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -49,6 +48,8 @@ jobs:
         run: yarn install --preferred-cache-folder=${{ steps.yarn-cache-dir-path.outputs.dir }}
       
       - name: Build
+        env:
+          CI: false 
         run: yarn build
         
       - name: Docker build
