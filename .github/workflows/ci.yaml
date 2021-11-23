@@ -31,14 +31,14 @@ jobs:
           path: /tmp/.buildx-cache
           key: ${{ runner.os }}-${{ env.SERVICE }}-buildx
 
-      - uses: actions/cache@v2
+      - name: Restore node_modules
+        uses: actions/cache@v2
         with:
           path: '**/node_modules'
           key: ${{ runner.os }}-modules-${{ hashFiles('**/yarn.lock') }}
 
-      - run: ls -lah 
-
-      - uses: bahmutov/npm-install@HEAD
+      - name: Install dependences
+        uses: bahmutov/npm-install@HEAD
 
       - name: Build
         env:
