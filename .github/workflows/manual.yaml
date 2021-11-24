@@ -1,0 +1,18 @@
+name: "DMM CI manual"
+
+on: [workflow_dispatch]
+
+env:
+  SERVICE: dmm-interface
+
+jobs:
+  trigger:
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Trigger to Auto deploy PR
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.GH_PAT }}
+        repository: kybernetwork/infra-config
+        event-type: opened
+        client-payload: '{"repo_name": "dmm-interface", "pr_number": "1", "image_name": "vietanhs0817/dmm-interface", "image_tag": "develop-04082d2"}'
