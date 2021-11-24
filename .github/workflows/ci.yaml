@@ -10,7 +10,7 @@ jobs:
     runs-on: ubuntu-18.04
     outputs:
       repo_name: ${{ github.event.repository.name }}
-      pr_numner: ${{ steps.pr_number.outputs.value }}
+      pr_number: ${{ steps.pr_number.outputs.value }}
       image_name: "${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE }}"
       image_tag: ${{ steps.get_tag.outputs.value }}
     steps:
@@ -83,13 +83,23 @@ jobs:
   trigger:
     needs:
       - docker
-    if: github.event.action == 'opened' || github.event.action == 'closed'
+    if: github.event.action == 'opened' || github.event.action == 'opened' || github.event.action == 'closed'
     runs-on: ubuntu-18.04
     steps:
+    - name: Map event
+      id: map_event
+      run: |
+        EVENT="${{ github.event.action }}"
+        if [[ "$EVENT" = "reopen" ]]; then
+          EVENT=opened 
+        fi
+        
+        echo "::set-output name=value::$EVENT"
+
     - name: Trigger to Auto deploy PR
       uses: peter-evans/repository-dispatch@v1
       with:
         token: ${{ secrets.GH_PAT }}
         repository: kybernetwork/infra-config
-        event-type: ${{ github.event.action }}
-        client-payload: ${{ toJson(needs.docker.outputs) }}
+        event-type: ${{ steps.map_event.outputs.value }}
+        client-payload: '{"repo_name": "${{ needs.docker.outputs.repo_name }}", "pr_number": "${{ needs.docker.outputs.pr_number }}", "image_name": "${{ needs.docker.outputs.image_name }}", "image_tag": "${{ needs.docker.outputs.image_tag }}"}'
