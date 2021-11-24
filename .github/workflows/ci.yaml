@@ -86,7 +86,6 @@ jobs:
     if: github.event.action == 'opened' || github.event.action == 'closed'
     runs-on: ubuntu-18.04
     steps:
-    - name: 
     - name: Trigger to Auto deploy PR
       uses: peter-evans/repository-dispatch@v1
       with:
