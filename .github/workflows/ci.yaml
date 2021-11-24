@@ -11,7 +11,7 @@ jobs:
     outputs:
       repo_name: ${{ github.event.repository.name }}
       pr_number: ${{ steps.pr_number.outputs.value }}
-      image_name: "${{ secrets.DOCKER_USERNAME }}/${{ env.SERVICE }}"
+      image_name: "vietanhs0817/${{ env.SERVICE }}"
       image_tag: ${{ steps.get_tag.outputs.value }}
     steps:
       - name: Checkout
@@ -77,8 +77,8 @@ jobs:
       - name: Get PR Number
         id: pr_number
         run: 
-          pr_number=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-          echo "::set-output name=value::$pr_number"
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          echo "::set-output name=value::$PR_NUMBER"
 
   trigger:
     needs:
@@ -90,7 +90,7 @@ jobs:
       id: map_event
       run: |
         EVENT="${{ github.event.action }}"
-        if [[ "$EVENT" = "reopen" ]]; then
+        if [[ "$EVENT" = "reopened" ]]; then
           EVENT=opened 
         fi
         
