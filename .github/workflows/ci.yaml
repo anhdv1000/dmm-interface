@@ -83,7 +83,7 @@ jobs:
   trigger:
     needs:
       - docker
-    if: github.event.action == 'opened' || github.event.action == 'opened' || github.event.action == 'closed'
+    if: github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'closed'
     runs-on: ubuntu-18.04
     steps:
     - name: Map event
