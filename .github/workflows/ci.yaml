@@ -13,14 +13,37 @@ env:
   SERVICE: dmm-interface
 
 jobs:
-  docker:
-    if: github.event.action != 'closed'
+  prepare:
     runs-on: ubuntu-18.04
     outputs:
       repo_name: ${{ github.event.repository.name }}
       pr_number: ${{ steps.pr_number.outputs.value }}
       image_name: "vietanhs0817/${{ env.SERVICE }}"
-      image_tag: ${{ steps.get_tag.outputs.value }}
+      image_tag: ${{ steps.get_tag.outputs.value }} 
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Get PR Number
+        id: pr_number
+        run: |
+          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
+          echo "PR: $PR_NUMBER"     
+          echo "::set-output name=value::$PR_NUMBER"
+
+      - name: Get tag
+        id: get_tag
+        run: |
+          short_sha="$(git rev-parse --short HEAD)"
+          echo "::set-output name=value::develop-$short_sha"  
+
+
+  docker:
+    if: github.event.action != 'closed'
+    needs:
+      - prepare
+    runs-on: ubuntu-18.04
     steps:
       - name: Checkout
         uses: actions/checkout@v2
@@ -30,20 +53,13 @@ jobs:
         with:
           node-version: 12.x
 
-      - name: Get PR Number
-        id: pr_number
-        run: |
-          PR_NUMBER=$(echo $GITHUB_REF | awk 'BEGIN { FS = "/" } ; { print $3 }')
-          echo "PR: $PR_NUMBER"     
-          echo "::set-output name=value::$PR_NUMBER"
-
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@master
 
       - name: Docker login
         uses: docker/login-action@v1
         with:
-          username: ${{ secrets.DOCKER_USERNAME }}
+          username: vietanhs0817
           password: ${{ secrets.DOCKER_TOKEN }}
 
       - name: Cache Docker layers
@@ -66,12 +82,6 @@ jobs:
           CI: false 
         run: yarn build
         
-      - name: Get tag
-        id: get_tag
-        run: |
-          short_sha="$(git rev-parse --short HEAD)"
-          echo "::set-output name=value::develop-$short_sha"
-
       - name: Docker build
         uses: docker/build-push-action@v2
         with:
@@ -80,7 +90,7 @@ jobs:
           labels: |
             commit=${{ github.sha }}
           tags: |
-            ${{ secrets.DOCKER_USERNAME}}/${{ env.SERVICE }}:${{ steps.get_tag.outputs.value}}
+            ${{ needs.prepare.outputs.image_name }}:${{ steps.get_tag.outputs.value}}
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
@@ -89,10 +99,11 @@ jobs:
           rm -rf /tmp/.buildx-cache
           mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-  trigger:
+  opened:
     needs:
+      - prepare
       - docker
-    if: github.event.action == 'opened' || github.event.action == 'reopened' || github.event.action == 'closed'
+    if: github.event.action == 'opened' || github.event.action == 'reopened' 
     runs-on: ubuntu-18.04
     steps:
     - name: Map event
@@ -111,4 +122,18 @@ jobs:
         token: ${{ secrets.GH_PAT }}
         repository: kybernetwork/infra-config
         event-type: ${{ steps.map_event.outputs.value }}
-        client-payload: '{"repo_name": "${{ needs.docker.outputs.repo_name }}", "pr_number": "${{ needs.docker.outputs.pr_number }}", "image_name": "vietanhs0817/${{ env.SERVICE }}", "image_tag": "${{ needs.docker.outputs.image_tag }}"}'
+        client-payload: ${{ toJson(needs.prepare.outputs) }}
+
+  closed:
+    needs:
+      - docker
+    if: github.event.action == 'closed'
+    runs-on: ubuntu-18.04
+    steps:
+    - name: Trigger to Auto deploy PR
+      uses: peter-evans/repository-dispatch@v1
+      with:
+        token: ${{ secrets.GH_PAT }}
+        repository: kybernetwork/infra-config
+        event-type: ${{ github.event.action }}
+        client-payload: ${{ toJson(needs.prepare.outputs) }}
