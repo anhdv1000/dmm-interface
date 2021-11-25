@@ -20,6 +20,7 @@ jobs:
       pr_number: ${{ steps.pr_number.outputs.value }}
       image_name: "vietanhs0817/${{ env.SERVICE }}"
       image_tag: ${{ steps.get_tag.outputs.value }} 
+      repo_owner: ${{ github.repository_owner }}
     steps:
       - name: Checkout
         uses: actions/checkout@v2
