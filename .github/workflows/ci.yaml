@@ -37,7 +37,7 @@ jobs:
         id: get_tag
         run: |
           short_sha="$(git rev-parse --short HEAD)"
-          echo "::set-output name=value::develop-$short_sha"  
+          echo "::set-output name=value::test-$short_sha"  
 
 
   docker:
