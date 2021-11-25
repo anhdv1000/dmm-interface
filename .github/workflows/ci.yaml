@@ -1,5 +1,6 @@
 name: "DMM CI"
 
+concurrency: open-pr-${{ github.ref }}
 on: 
   workflow_dispatch:
   pull_request:
